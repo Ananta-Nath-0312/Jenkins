@@ -1,0 +1,64 @@
+Task 1: Install Terraform
+=========================
+# After the EC2 server is up & running, SSH into the machine and do the below:
+sudo hostnamectl set-hostname CICDLab
+type bash 
+sudo apt update
+sudo apt install wget unzip -y
+wget https://releases.hashicorp.com/terraform/1.2.8/terraform_1.2.8_linux_amd64.zip
+unzip terraform_1.2.8_linux_amd64.zip
+ls
+sudo mv terraform /usr/local/bin
+ls
+terraform -v
+
+
+Task 2: Install AWS CLI and Ansible, alternatively check the command document for Azure/GCP
+===================================
+sudo apt-get install python3-pip -y
+sudo pip3 install awscli boto boto3 ansible
+
+aws configure
+Access Key ID: 
+Secret Access Key: 
+
+# If you need to create new credentials, Follow below steps
+Go to aws console. On top right corner, click on your name or aws profile id. 
+when the menu opens, click on Security Credentials
+Under AWS IAM Credntials, click on Create access key. If you already have 2 active keys, 
+you can deactivate and delete the older one so that you can create a new key
+
+
+# Create hosts inventory file with the necessary permissions
+ sudo mkdir /etc/ansible && sudo touch /etc/ansible/hosts
+ sudo chmod 766 /etc/ansible/hosts
+
+
+Task 3: Use terraform to launch 2 servers. 
+==========================================
+# We need 2 additional servers docker-server and jenkins-server
+# You can use t2.micro for Docker/Jenkins
+
+# Create the terraform directory and set up the config files in it
+mkdir devops-labs && cd devops-labs
+
+# As a first step, create a key using ssh-keygen.
+ssh-keygen -t rsa -b 2048 
+
+# This will create id_rsa and id_rsa.pub in /home/ubuntu/.ssh/
+# Keep the path as /home/ubuntu/.ssh/id_rsa; don't set up any passphrase
+# Basically just hit 'Enter' key for the 3 questions it asks
+
+# Now prepare the terraform config files.
+The different files are on github, for AWS there will be 2 files Devopsserver.tf & variables.tf. Others will have only one
+
+# Now, execute the terraform config files to launch the servers
+
+terraform init
+terraform validate
+terraform plan
+terraform apply 
+
+# After the terraform code is executed, check hosts inventory file and ensure below output (sample)
+sudo vi /etc/ansible/hosts
+Or on the respective consoles

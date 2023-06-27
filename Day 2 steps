@@ -1,0 +1,65 @@
+vi /etc/ansible/hosts
+get the ip address of the servers
+[jenkins-server]
+3.17.142.112
+[docker-server]
+18.117.84.145
+
+ssh username@ipaddress to login to the servers, in case of doubt check the console
+
+sudo hostnamectl set-hostname Jenkins
+sudo hostnamectl set-hostname Docker
+
+on the CICD machine
+mkdir ansible && cd ansible
+wget https://martuj.s3.ap-south-1.amazonaws.com/DevOpsSetup.yml
+ansible-playbook DevOpsSetup.yml
+
+(Azure/GCP scripts are different and the way to run is in the command files)
+
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword to get admin password for Jenkins.
+
+GIT Steps
+a. Click on Manage Jenkins > Manage Plugins
+
+b. Under Manage Plugins, go to the Available tab and search for Maven. Select the Maven Integration 
+Plugin and Unleash Maven Plugin and click Install without restart
+
+c. After going back to the Home Page select Manage Jenkins and go to Tool.
+Inside Global Tool Configuration, look for Maven, and under Maven installations, click Add Maven. 
+Give the Name as Maven, choose Version as 3.8.4 and Save the configuration
+
+d. Now you need to make a project for your application build, for that select New Item from the 
+Home Page of Jenkins
+
+e. Enter an item name as hello-world and select the project as Maven Project and then click OK
+
+f. After you click on OK, you will be prompted to the configure page inside hello-world project. 
+
+g. Go to Source Code Management tab, select Source Code Management as Git You need to provide the 
+GitHub Repository URL and GitHub Account Credentials. In the Credentials field, you have to 
+click Add then click on Jenkins.
+
+h. Click Build Now
+
+Check for the war file in /var/lib/jenkins/workspace/hello-world/target/ on Jenkins Machine
+
+On the Jenkins machine
+sudo apt install tomcat9 tomcat9-admin -y
+sudo systemctl enable tomcat9
+sudo vi /etc/tomcat9/server.xml  - change port number from 8080 to 9999 & save file
+sudo service tomcat9 restart
+sudo service tomcat9 status
+
+test Apache using ipaddress:9999
+
+sudo cp -R /var/lib/jenkins/workspace/hello-world/target/hello-world-war-1.0.0.war /var/lib/tomcat9/webapps
+
+Check final deployment with ipaddress:9999/hello-world-war-1.0.0/
+
+Cleanup
+sudo service tomcat9 stop
+sudo apt remove tomcat9 -y
+
+Exit & return to CICD machine
+Run Terraform destroy from DevOps folder
